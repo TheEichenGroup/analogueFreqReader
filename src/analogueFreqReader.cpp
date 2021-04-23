@@ -1,6 +1,6 @@
-/*
-  AudioFrequencyMeter library for Arduino Zero.
-  Copyright (c) 2015 Arduino LLC. All right reserved.
+/**************************************************************************************************
+  analogueFreqReader library for Arduino.
+  Copyright (c) 2021 The Eichen Group. All right reserved.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -17,14 +17,11 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 
-  Thanks to Amanda Ghassaei
-  for the frequency detection algorithm posted on:
+  Thanks to Arduino LLC
+  for the ArduinoFrequencyMeter library published on GitHub.
+**************************************************************************************************/
 
-  http://www.instructables.com/id/Arduino-Frequency-Detection/
-  Sept 2012
-*/
-
-#include "AudioFrequencyMeter.h"
+#include "analogueFreqReader.hpp"
 
 #define ARRAY_DEPTH             20
 #define NOT_INITIALIZED         -1
@@ -59,11 +56,12 @@ static int newMaxAmplitude;                              // Variable used to che
 
 static volatile int checkMaxAmp;                         // Used to update the new frequency in base of the amplitude threshold
 
-AudioFrequencyMeter::AudioFrequencyMeter() {
+AudioFrequencyMeter::analogueFreqReader()
+{
   initializeVariables();
 }
 
-void AudioFrequencyMeter::begin(int pin, unsigned int rate)
+void AudioFrequencyMeter::begin(uint8_t &pin, uint32_t &rate)
 {
   samplePin = pin;                              // Store ADC channel to sample
   sampleRate = rate;                            // Store sample rate value
@@ -91,7 +89,8 @@ void AudioFrequencyMeter::setClippingPin(int pin)
 
 void AudioFrequencyMeter::checkClipping()
 {
-  if (clipping) {
+  if (clipping)
+  {
     digitalWrite(clippingPin, LOW);
     clipping = false;
   }
@@ -118,14 +117,16 @@ void AudioFrequencyMeter::setBandwidth(float min, float max)
   maxFrequency = max;
 }
 
-float AudioFrequencyMeter::getFrequency()
+float AudioFrequencyMeter::getHzA()
 {
   float frequency = -1;
 
-  if (checkMaxAmp > amplitudeThreshold) {
-    frequency = (float)(sampleRate / period);
-    
-    if ((frequency < minFrequency) || (frequency > maxFrequency)) {
+  if (checkMaxAmp > amplitudeThreshold)
+  {
+    frequency = static_cast<float> (sampleRate / period);
+
+    if ((frequency < minFrequency) || (frequency > maxFrequency))
+    {
       frequency = -1;
     }
   }
@@ -308,7 +309,7 @@ void TC5_Handler (void)
       slope[arrayIndex] = newSlope;
       timer[arrayIndex] = time;
       time = 0;
-      
+
       if (arrayIndex == 0) {
         noMatch = 0;
         arrayIndex++;

@@ -1,6 +1,6 @@
-/*
-  AudioFrequencyMeter library for Arduino Zero.
-  Copyright (c) 2015 Arduino LLC. All right reserved.
+/**************************************************************************************************
+  analogueFreqReader library for Arduino.
+  Copyright (c) 2021 The Eichen Group. All right reserved.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -15,14 +15,11 @@
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-  
-  
-  Thanks to Amanda Ghassaei
-  for the frequency detection algorithm posted on:
-  
-	http://www.instructables.com/id/Arduino-Frequency-Detection/
-	Sept 2012
-*/
+
+
+  Thanks to Arduino LLC
+  for the ArduinoFrequencyMeter library published on GitHub.
+**************************************************************************************************/
 
 
 #include "Arduino.h"
@@ -38,32 +35,35 @@
 
 bool ADCisSyncing(void);
 uint8_t ADCread();
-    
-class AudioFrequencyMeter {
+
+class analogueFreqReader
+{
   public:
 
-    AudioFrequencyMeter();
+    analogueFreqReader();
 
-    void begin(int pin, unsigned int sampleRate);
+    void begin(uint8_t &pin, uint32_t &sampleRate);
     void end(void);
-    
+
     void setClippingPin(int pin);
     void checkClipping(void);
-    
+
     void setAmplitudeThreshold(int threshold);
     void setTimerTolerance(int tolerance);
     void setSlopeTolerance(int tolerance);
     void setBandwidth(float minFrequency, float maxFrequency);
-    
-    float getFrequency(void);
-    
+
+    float getHzA(void);
+    inline float getKHzA(void) { return (getHz()/1000); }
+    inline float getMHzA(void) { return (getHz()/1000000); }
+
   private:
     void initializeVariables(void);
     void ADCconfigure();
     void ADCenable(void);
     void ADCdisable(void);
     void ADCsetMux(void);
-    
+
     void tcConfigure(void);
     bool tcIsSyncing(void);
     void tcEnable(void);
